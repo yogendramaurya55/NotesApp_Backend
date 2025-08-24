@@ -9,8 +9,13 @@ app.use(cors({
     credentials: true
 }))
 
-app.get('/' , (req,res)=>{
-    res.send("server is ok")
-});
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+
+
+import noteRouter from "./routes/note.route.js"
+
+app.use("/api/v1/notes" , noteRouter)
 
 export {app}

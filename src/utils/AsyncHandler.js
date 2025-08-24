@@ -3,3 +3,5 @@ const asyncHandler = (requestHandler) => {
         Promise.resolve(requestHandler(req , res , next))
     }
 }
+
+export {asyncHandler}

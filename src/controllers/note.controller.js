@@ -21,8 +21,30 @@ const createNote = asyncHandler(async (req , res)=> {
 
     return res
     .status(201)
-    .json(new ApiResponse(200 , savedNote , "note is saved successfully "))
+    .send(savedNote)
+});
+
+const getAllNotes = asyncHandler(async (req,res)=>{
+    try {
+        const notes = await Note.find({} , {
+            _id : 0,
+            title : 1,
+            description: 1,
+            priority :1
+        }).sort({createdAt : -1})
+        
+        return res
+        .status(200)
+        .json(new ApiResponse(200 , notes , "notes fetched successfully"))
+        
+    } catch (error) {
+        console.log(error)
+        throw new ApiError(500 , " Server is not reachable")
+    }
 });
 
 
-export {createNote};
+export {
+    createNote,
+    getAllNotes
+};

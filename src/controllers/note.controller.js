@@ -5,15 +5,24 @@ import { Note } from "../models/notes.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
 const createNote = asyncHandler(async (req , res)=> {
-    const {title , description , priority} = req.body;
+    const {noteTitle , noteDescription , notePriority} = req.body;
 
-    if(!title){
+    if(!noteTitle){
         throw new ApiError(400 , "title is compulsory");
     }
 
-    const newNote = await Note.create({title , description , priority});
+    const newNote = await Note.create({noteTitle , noteDescription , notePriority});
     
-    const savedNote = await Note.findById(newNote._id).select();
+    const savedNote = await Note.find(
+        {_id : newNote._id},
+        {
+            _id : 0,
+            noteTitle:1,
+            noteDescription: 1,
+            notePriority :1,
+            date: 1
+        }
+    )
 
     if(!savedNote){
         throw new ApiError(500 , "something went wrong while saving note in mongoDB")
@@ -21,30 +30,34 @@ const createNote = asyncHandler(async (req , res)=> {
 
     return res
     .status(201)
-    .send(savedNote)
+    .json(savedNote)
 });
 
-const getAllNotes = asyncHandler(async (req,res)=>{
+const getNotes = asyncHandler(async (req,res)=>{
     try {
-        const notes = await Note.find({} , {
-            _id : 0,
-            title : 1,
-            description: 1,
-            priority :1
-        }).sort({createdAt : -1})
-        
+        const notes = await Note.find(
+            {},
+            {
+                _id:0,
+                noteTitle:1,
+                noteDescription:1,
+                notePriority:1,
+                date:1
+            }
+        ).sort({createdAt : -1});
+
         return res
         .status(200)
-        .json(new ApiResponse(200 , notes , "notes fetched successfully"))
-        
+        .json(notes)
+
     } catch (error) {
-        console.log(error)
-        throw new ApiError(500 , " Server is not reachable")
+        throw new ApiError(500 , "Something went wrong form server side")
     }
-});
+})
+
 
 
 export {
     createNote,
-    getAllNotes
+    getNotes
 };

@@ -1,18 +1,23 @@
 import mongoose, { model, Schema } from "mongoose";
+import moment from "moment"
 
 const notesSchema = new Schema({
-    title : {
+    noteTitle : {
         type: String,
         required : true
     },
-    description: {
+    noteDescription: {
         type: String
     },
-    priority:{
+    notePriority:{
         type: String,
         enum: ["Low" ,"Medium","High"],
         default : "Low"
+    },
+    date:{
+        type: String,
+        default: ()=> moment().format("DD.MM.YYYY")
     }
-} , {timestamps: true})
+},{timestamps:true})
 
 export const Note = model("Note",notesSchema)
